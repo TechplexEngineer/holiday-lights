@@ -21,8 +21,11 @@ class DimmerOutput
 			this->pin = pin;
 			this->dim = dim;
 		}
+		// Which pin to output this channel to
 		int pin;
+		// Dimming level DIM_MIN = on, DIM_MAX = 0ff
 		int dim;
+		// Boolean to store a "switch" to tell us if we have crossed zero
 		bool isOff = false;
 };
 
@@ -61,9 +64,6 @@ class ZCDimmer
 
 		int PIN_ZC_IN;
 		IntervalTimer timer;
-
-		// Boolean to store a "switch" to tell us if we have crossed zero
-		volatile bool isOff = false;
 
 		// Variable to use as a counter volatile as it is in an interrupt
 		volatile int counter = 0;

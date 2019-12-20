@@ -116,23 +116,24 @@ void ZCDimmer::timer_dim()
 	// for each output
 	for(int outNum = 0; outNum < ZCDimmer::getInstance()->numOutputs; outNum ++)
 	{
-		DimmerOutput output = ZCDimmer::getInstance()->outputs[outNum];
-		digitalWrite(D3, dbgtmr);
+		DimmerOutput* output = &ZCDimmer::getInstance()->outputs[outNum];
+		// digitalWrite(D3, dbgtmr);
 
-		if(output.isOff)
+		if(output->isOff)
 		{
 			digitalWrite(D3, dbgtmr);
-			if(ZCDimmer::getInstance()->counter >= output.dim)
+			if(ZCDimmer::getInstance()->counter >= output->dim)
 			{
+				// digitalWrite(D3, dbgtmr);
 				// if (ZCDimmer::getInstance()->dim != ZCDimmer::DIM_MAX)
 				// {
 					// turn on output
-					digitalWrite(output.pin, HIGH);
+					digitalWrite(output->pin, HIGH);
 
 					// // reset time step counter
 					// ZCDimmer::getInstance()->counter = 0;
 					//reset zero cross detection
-					output.isOff = false;
+					output->isOff = false;
 				// }
 			}
 			else
@@ -159,8 +160,7 @@ void ZCDimmer::isr_on_zero_cross()
 	// {
 		dbg = !dbg;
 		digitalWrite(D4, dbg);
-		// keep track of when we turn off the output, ie: at a ZC
-		ZCDimmer::getInstance()->isOff = true;
+
 		// begin counting the (dim) amount before turning on
 		ZCDimmer::getInstance()->counter = 0;
 
@@ -170,9 +170,12 @@ void ZCDimmer::isr_on_zero_cross()
 		// for each output
 		for(int outNum = 0; outNum < ZCDimmer::getInstance()->numOutputs; outNum ++)
 		{
-			DimmerOutput output = ZCDimmer::getInstance()->outputs[outNum];
+			DimmerOutput* output = &ZCDimmer::getInstance()->outputs[outNum];
 			// turn off at the zero crossing
-			digitalWrite(output.pin, LOW);
+			digitalWrite(output->pin, LOW);
+
+			// keep track of when we turn off the output, ie: at a ZC
+			output->isOff = true;
 		}
 
 	// 	last_interrupt_time = interrupt_time;
