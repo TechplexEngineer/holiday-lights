@@ -132,8 +132,13 @@ void ZCDimmer::timer_dim()
 		// if the output is off and we have waited long enough
 		if(output->isOff && ZCDimmer::getInstance()->counter >= output->dim)
 		{
-			// if (ZCDimmer::getInstance()->dim != ZCDimmer::DIM_MAX)
-			// {
+			// if we are at DIM_MAX don't turn on at all
+			if (output->dim == ZCDimmer::DIM_MAX)
+			{
+				// don't turn on
+			}
+			else
+			{
 				// turn on output
 				digitalWrite(output->pin, HIGH);
 
@@ -141,7 +146,7 @@ void ZCDimmer::timer_dim()
 				// ZCDimmer::getInstance()->counter = 0;
 				//reset zero cross detection
 				output->isOff = false;
-			// }
+			}
 		}
 	}
 }
