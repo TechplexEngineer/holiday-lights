@@ -15,7 +15,7 @@ struct eeprom_data
 const int PIN_ZC_IN   = D5;
 
 
-const int numOutputs = 2;
+const int numOutputs = 3;
 int outputPins[] = {D6, D4, D3, D2, D1, D0};
 
 E131 e131;
@@ -31,6 +31,7 @@ void setup()
 void loop()
 {
   e131.parsePacket();
-  ZCDimmer::getInstance()->setBrightness(0, e131.data[11]);
-  ZCDimmer::getInstance()->setBrightness(1, e131.data[12]);
+  ZCDimmer::getInstance()->setBrightness(0, e131.data[7]);
+  ZCDimmer::getInstance()->setBrightness(1, e131.data[8]);
+  ZCDimmer::getInstance()->setBrightness(2, e131.data[9]);
 }
