@@ -74,7 +74,6 @@ class ZCDimmer
 		// max number of channels we support
 		// Photon only has so many pins
 		const static int MAX_OUTPUTS = 12;
-		// MUST USE D6 or D7 as ZC IN pin
 		// const int OUT_PINS = [D0, D1, D2, D3, D4, D5, A0, A1, A2, A3, A4, A5]
 		// Dimming level and output pin
 		DimmerOutput outputs[MAX_OUTPUTS];

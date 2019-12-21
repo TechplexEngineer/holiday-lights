@@ -3,6 +3,8 @@
 #include "Dimmer.h"
 #include <algorithm>
 
+// #define debugbb
+
 
 // This is the delay-per-brightness step in microseconds.
 // It is calculated based on the frequency of your voltage supply (50Hz or 60Hz)
@@ -43,9 +45,11 @@ ZCDimmer* ZCDimmer::getInstance()
  */
 void ZCDimmer::begin(int PIN_ZC_IN, int outputPins[], int numOutputs)
 {
+	#ifdef debugbb
 	//DEBUG
 	pinMode(D3, OUTPUT);
 	pinMode(D4, OUTPUT);
+	#endif
 
 	// store the input pin
 	this->PIN_ZC_IN = PIN_ZC_IN;
@@ -111,36 +115,33 @@ void ZCDimmer::setBrightness(int channel, int value)
  */
 void ZCDimmer::timer_dim()
 {
-	static bool dbgtmr = false;
-	dbgtmr = !dbgtmr;
+	#ifdef debugbb
+		static bool dbgtmr = false;
+		dbgtmr = !dbgtmr;
+		digitalWrite(D3, dbgtmr);
+	#endif
+
+	// increment time step counter
+	ZCDimmer::getInstance()->counter++;
+
 	// for each output
 	for(int outNum = 0; outNum < ZCDimmer::getInstance()->numOutputs; outNum ++)
 	{
 		DimmerOutput* output = &ZCDimmer::getInstance()->outputs[outNum];
-		// digitalWrite(D3, dbgtmr);
 
-		if(output->isOff)
+		// if the output is off and we have waited long enough
+		if(output->isOff && ZCDimmer::getInstance()->counter >= output->dim)
 		{
-			digitalWrite(D3, dbgtmr);
-			if(ZCDimmer::getInstance()->counter >= output->dim)
-			{
-				// digitalWrite(D3, dbgtmr);
-				// if (ZCDimmer::getInstance()->dim != ZCDimmer::DIM_MAX)
-				// {
-					// turn on output
-					digitalWrite(output->pin, HIGH);
+			// if (ZCDimmer::getInstance()->dim != ZCDimmer::DIM_MAX)
+			// {
+				// turn on output
+				digitalWrite(output->pin, HIGH);
 
-					// // reset time step counter
-					// ZCDimmer::getInstance()->counter = 0;
-					//reset zero cross detection
-					output->isOff = false;
-				// }
-			}
-			else
-			{
-				// increment time step counter
-				ZCDimmer::getInstance()->counter++;
-			}
+				// // reset time step counter
+				// ZCDimmer::getInstance()->counter = 0;
+				//reset zero cross detection
+				output->isOff = false;
+			// }
 		}
 	}
 }
@@ -150,7 +151,11 @@ void ZCDimmer::timer_dim()
  */
 void ZCDimmer::isr_on_zero_cross()
 {
-	static bool dbg = false;
+	#ifdef debugbb
+		static bool dbg = false;
+		dbg = !dbg;
+		digitalWrite(D4, dbg);
+	#endif
 	// static unsigned long last_interrupt_time = 0;
 	// unsigned long interrupt_time = micros();
 
@@ -158,8 +163,6 @@ void ZCDimmer::isr_on_zero_cross()
 	// If interrupts come faster than 1ms, assume it's a bounce and ignore
 	// if (interrupt_time - last_interrupt_time > 4000)
 	// {
-		dbg = !dbg;
-		digitalWrite(D4, dbg);
 
 		// begin counting the (dim) amount before turning on
 		ZCDimmer::getInstance()->counter = 0;
