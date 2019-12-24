@@ -4,7 +4,7 @@
 #include <algorithm>
 
 PRODUCT_ID(10541);
-PRODUCT_VERSION(3);
+PRODUCT_VERSION(4);
 
 
 
@@ -41,31 +41,26 @@ void setup()
   if (deviceID == lights_bed) {
     WiFi.setHostname("lights_bed");
     // 192.168.1.201
-    dmxStart = 1;
     numOutputs = 1;
   }
   else if (lights_sw == deviceID) {
     WiFi.setHostname("lights_sw");
     // 192.168.1.202
-    dmxStart = 2;
     numOutputs = 2;
   }
   else if (lights_office == deviceID) {
     WiFi.setHostname("lights_office");
     // 192.168.1.203
-    dmxStart = 4;
     numOutputs = 3;
   }
   else if (lights_outside == deviceID) {
     WiFi.setHostname("lights_outside");
     // 192.168.1.204
-    dmxStart = 7;
     numOutputs = 4;
   }
   else if (lights_great == deviceID) {
     WiFi.setHostname("lights_great");
     // 192.168.1.205
-    dmxStart = 11;
     numOutputs = 2;
   }
 
