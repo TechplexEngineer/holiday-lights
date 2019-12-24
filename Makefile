@@ -11,3 +11,7 @@ clean:
 .PHONY: flash
 flash:
 	po photon flash
+
+.PHONY: serial
+serial:
+	po serial monitor

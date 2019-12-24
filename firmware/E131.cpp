@@ -106,7 +106,6 @@ uint16_t E131::parsePacket()
 	int size = udp.receivePacket(packet->raw, E131_PACKET_SIZE);
 	if (size > 0)
 	{
-		Serial.println("Got a Packet!");
 		error = validateE131Packet();
 
 		if (!error)

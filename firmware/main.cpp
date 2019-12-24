@@ -1,9 +1,10 @@
 #include "Particle.h"
 #include "Dimmer.h"
 #include "E131.h"
+#include <algorithm>
 
 PRODUCT_ID(10541);
-PRODUCT_VERSION(1);
+PRODUCT_VERSION(2);
 
 
 
@@ -19,7 +20,7 @@ struct eeprom_data
 const int PIN_ZC_IN   = D5;
 
 
-int numOutputs = 1;
+uint16_t numOutputs = 1;
 int dmxStart = 1;
 int outputPins[] = {D6, D4, D3, D2, D1, D0};
 
@@ -76,13 +77,13 @@ int count = 0;
 
 void loop()
 {
+  int channels = e131.parsePacket();
   if (count ++ % 100 == 0)
   {
-    Serial.printlnf("%d\tLoop %d", count, e131.data[1]);
+    Serial.printlnf("%d\tLoop %d ted %d", count, e131.data[1], channels);
   }
-  uint16_t channels = e131.parsePacket();
-  for (int i = dmxStart; i <= numOutputs; ++i)
+  for (int i = 0; i < numOutputs; ++i)
   {
-    ZCDimmer::getInstance()->setBrightness(1, e131.data[i]);
+    ZCDimmer::getInstance()->setBrightness(i, e131.data[i+dmxStart]);
   }
 }

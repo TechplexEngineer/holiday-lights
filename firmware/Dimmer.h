@@ -68,7 +68,7 @@ class ZCDimmer
 		// Variable to use as a counter volatile as it is in an interrupt
 		volatile int counter = 0;
 
-		static const int DIM_MIN = 60;  // on
+		static const int DIM_MIN = 20;  // on
 		static const int DIM_MAX = 115; // off
 
 		// max number of channels we support

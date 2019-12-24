@@ -153,7 +153,7 @@ class E131
 		e131_packet_t *packet; // Pointer to last valid packet
 		e131_error_t validateE131Packet();
 		void dumpError(e131_error_t error);
- 
+
 };
 
 #endif //E131_h
