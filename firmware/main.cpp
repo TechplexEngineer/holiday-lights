@@ -2,6 +2,10 @@
 #include "Dimmer.h"
 #include "E131.h"
 
+PRODUCT_ID(10541);
+PRODUCT_VERSION(1);
+
+
 
 
 struct eeprom_data
@@ -15,23 +19,70 @@ struct eeprom_data
 const int PIN_ZC_IN   = D5;
 
 
-const int numOutputs = 4;
+int numOutputs = 1;
+int dmxStart = 1;
 int outputPins[] = {D6, D4, D3, D2, D1, D0};
 
 E131 e131;
 
+const String lights_bed     = "2c0044000447343337373738";
+const String lights_sw      = "18002e000a47353235303037";
+const String lights_office  = "410026000d51353432383931";
+const String lights_outside = "390043000b47353235303037";
+const String lights_great   = "35002a000f51353532343635";
+
 void setup()
 {
+  Serial.begin();
   Particle.publish("lightshow/ip", WiFi.localIP().toString(), PRIVATE);
+
+  const String deviceID = System.deviceID();
+  if (deviceID == lights_bed) {
+    WiFi.setHostname("lights_bed");
+    // 192.168.1.201
+    dmxStart = 1;
+    numOutputs = 1;
+  }
+  else if (lights_sw == deviceID) {
+    WiFi.setHostname("lights_sw");
+    // 192.168.1.202
+    dmxStart = 2;
+    numOutputs = 2;
+  }
+  else if (lights_office == deviceID) {
+    WiFi.setHostname("lights_office");
+    // 192.168.1.203
+    dmxStart = 4;
+    numOutputs = 3;
+  }
+  else if (lights_outside == deviceID) {
+    WiFi.setHostname("lights_outside");
+    // 192.168.1.204
+    dmxStart = 7;
+    numOutputs = 4;
+  }
+  else if (lights_great == deviceID) {
+    WiFi.setHostname("lights_great");
+    // 192.168.1.205
+    dmxStart = 11;
+    numOutputs = 2;
+  }
+
   ZCDimmer::getInstance()->begin(PIN_ZC_IN, outputPins, numOutputs);
-  e131.begin();
+  e131.beginUnicast();
 }
+
+int count = 0;
 
 void loop()
 {
-  e131.parsePacket();
-  ZCDimmer::getInstance()->setBrightness(0, e131.data[7]);
-  ZCDimmer::getInstance()->setBrightness(1, e131.data[8]);
-  ZCDimmer::getInstance()->setBrightness(2, e131.data[9]);
-  ZCDimmer::getInstance()->setBrightness(3, e131.data[10]);
+  if (count ++ % 100 == 0)
+  {
+    Serial.printlnf("%d\tLoop %d", count, e131.data[1]);
+  }
+  uint16_t channels = e131.parsePacket();
+  for (int i = dmxStart; i <= numOutputs; ++i)
+  {
+    ZCDimmer::getInstance()->setBrightness(1, e131.data[i]);
+  }
 }

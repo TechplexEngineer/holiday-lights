@@ -141,8 +141,10 @@ class E131
 		E131();
 
 
+		//default to multicast
 		void begin();
-		void begin(uint16_t universeIP);
+		void beginMulitcast(uint16_t universeIP);
+		void beginUnicast();
 		uint16_t parsePacket();
 
 	private:

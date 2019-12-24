@@ -33,26 +33,26 @@ E131::E131()
 	// put those in begin()
 }
 
-/**
- * Example method.
- */
-void E131::begin()
+void E131::beginUnicast()
 {
-	// initialize hardware
-	IPAddress multicast(239,255,0,1);
+	// initialize
 	udp.begin(E131_DEFAULT_PORT);
-	udp.joinMulticast(multicast);
 	packet = &packetBuffer;
 }
-
-void E131::begin(uint16_t _universe)
+void E131::beginMulitcast(uint16_t _universe)
 {
-	// initialize hardware
+	// initialize
 	IPAddress multicast(239,255,((_universe >> 8) & 0xff),((_universe >> 0) & 0xff));
 	udp.begin(E131_DEFAULT_PORT);
 	udp.joinMulticast(multicast);
 	packet = &packetBuffer;
 }
+
+void E131::begin()
+{
+	beginMulitcast(1);
+}
+
 
 /* Packet validater */
 e131_error_t E131::validateE131Packet()
@@ -73,6 +73,7 @@ e131_error_t E131::validateE131Packet()
 
 void E131::dumpError(e131_error_t error)
 {
+	Serial.println("ERROR!");
 	switch (error) {
 		case ERROR_ACN_ID:
 			Serial.print(F("INVALID PACKET ID: "));
@@ -105,6 +106,7 @@ uint16_t E131::parsePacket()
 	int size = udp.receivePacket(packet->raw, E131_PACKET_SIZE);
 	if (size > 0)
 	{
+		Serial.println("Got a Packet!");
 		error = validateE131Packet();
 
 		if (!error)
