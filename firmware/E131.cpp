@@ -23,6 +23,7 @@ uint8_t sequence; /* Sequence tracker */
 
 UDP udp;
 
+uint8_t empty[255] = {0};
 
 /**
  * Constructor.
@@ -31,6 +32,9 @@ E131::E131()
 {
 	// be sure not to call anything that requires hardware be initialized here,
 	// put those in begin()
+
+	// Initialize data so if no packets come in, we read zeros.
+	data = empty;
 }
 
 void E131::beginUnicast()

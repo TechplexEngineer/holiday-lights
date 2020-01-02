@@ -4,7 +4,7 @@
 #include <algorithm>
 
 PRODUCT_ID(10541);
-PRODUCT_VERSION(4);
+PRODUCT_VERSION(5);
 
 
 
@@ -32,10 +32,21 @@ const String lights_office  = "410026000d51353432383931";
 const String lights_outside = "390043000b47353235303037";
 const String lights_great   = "35002a000f51353532343635";
 
+bool needReset = false;
+
+int cloudDeviceReset(String none)
+{
+  Serial.printf("\n\n------------ Cloud Function: devReset: ------------\n");
+  needReset = true;
+  return 0;
+}
+
 void setup()
 {
   Serial.begin();
   Particle.publish("lightshow/ip", WiFi.localIP().toString(), PRIVATE);
+
+  Particle.function("devReset", cloudDeviceReset);
 
   const String deviceID = System.deviceID();
   if (deviceID == lights_bed) {
@@ -72,6 +83,15 @@ int count = 0;
 
 void loop()
 {
+  if (needReset)
+  {
+    // Wait 3 secondss to allow for the cloud function to complete before resetting
+    Serial.println ("Reset requested, delaying 3sec\n");
+    Particle.publish("spark/status", "resetting", PRIVATE);
+    delay (3000);
+    System.reset ();
+  }
+
   int channels = e131.parsePacket();
   if (count ++ % 100 == 0)
   {
